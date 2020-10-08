@@ -12,10 +12,10 @@ const mongoose = require('mongoose');
 const { Buffer } = require("buffer");
 const passport = require('passport');
 const authenticate = require('./authenticate');
-
+const config = require('./config');
 const app = express();
 
-const url = 'mongodb://localhost:27017/conFusion';
+const url = config.mongoUrl;
 const connect = mongoose.connect(url);
 const port = 3000;
 
@@ -33,23 +33,9 @@ app.use(session({
     store: new FileStore(),
 }));
 
-app.use('/user', usersRouter);
+
 app.use(passport.initialize());
-app.use(passport.session());
-
-function auth(req, res, next) {
-    console.log(req.user);
-    if (!req.user) {
-        var err = new Error('You are not authenticated !');
-        err.status = 403;
-        next(err);
-    } else {
-        next();
-    }
-}
-
-app.use(auth);
-
+app.use('/user', usersRouter);
 
 app.use('/dishes', dishRouter);
 app.use('/leaders', leaderRouter);
